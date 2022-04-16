@@ -59,6 +59,22 @@ import SuperDecision from './components/Expert/SuperDecision'
 // our color : #563d7c
 
 const App = ()=>{
+
+
+    const getRandNumber= (num)=>
+    {
+        return Math.floor((Math.random() * num))
+    }
+    const backendList = [
+        'https://tg-node-one.herokuapp.com',
+        'https://tg-node-two.herokuapp.com',
+        'https://tg-node-three.herokuapp.com',
+        'https://tg-node-four.herokuapp.com',
+        'https://tg-node-five.herokuapp.com',
+        'https://tg-node-six.herokuapp.com',
+        'https://tg-node-seven.herokuapp.com',
+        'https://team-generation-api.herokuapp.com'
+    ]
     const [reload, setReload] = useState(null)
     const [sportIndex,setSportIndex] = useState(0) // change 
     const [bottomIndex,setBottomIndex] = useState(0)
@@ -101,6 +117,9 @@ const App = ()=>{
     let [selectionFlag,setSelectionFlag] = useState(false)
     let [adminPhoneNumber,setAdminPhoneNumber] = useState('9502285143')
 
+    {/* backend api handling  */}
+    let [backend,setBackend] = useState('https://team-generation-api.herokuapp.com')
+
     {/* expert stuff here */}
     let [softwareTeams,setSoftwareTeams] = useState([])
     let [humanTeams,setHumanTeams] = useState([])
@@ -109,11 +128,27 @@ const App = ()=>{
     let [expertUserList,setExpertUserList] = useState([]) 
     
     useEffect(()=>{
+
+        let backendStuff = localStorage.getItem('backend')
+        let backendIndex = getRandNumber(8) // array length
+        if(backendStuff !== null && backendStuff !== undefined && backendStuff !== '')
+        {
+            if(backendIndex === parseInt(backendStuff))
+                backendIndex = (backendIndex+1)%8; // array length 
+            localStorage.setItem('backend',`${backendIndex}`); 
+        }
+        else 
+        {
+            localStorage.setItem('backend',`${backendIndex}`); 
+        } 
+        setBackend(backendList[backendIndex])
+
+
         // making api call 
         let tg_id = localStorage.getItem('tg_id')
         if(tg_id !== null && tg_id !== undefined && tg_id !== '')
         {
-            axios.get(`https://team-generation-api.herokuapp.com/api/plan/status/${tg_id}`)
+            axios.get(`${backendList[backendIndex]}/api/plan/status/${tg_id}`)
             .then(response =>{
                 let data = response.data.data 
                 if(response.status===200)
@@ -227,6 +262,7 @@ const App = ()=>{
                     setRight = {setRight}
                     setLeft = {setLeft}
                     setRole = {setRole}
+                    backend = {backend}
                     />} />
                 <Route path="/mymatches" element = {<PreviousMatch
                     reload = {reload}
@@ -237,6 +273,7 @@ const App = ()=>{
                     setSportIndex = {setSportIndex}
                     bottomIndex = {bottomIndex}
                     setBottomIndex = {setBottomIndex}
+                    backend = {backend}
                     />} />
                 <Route path="/login" element={<Login
                     reload = {reload}
@@ -249,6 +286,7 @@ const App = ()=>{
                     setPlan = {setPlan}
                     setCurrentPlan ={setCurrentPlan}
                     setPreviousPlan = {setPreviousPlan}
+                    backend = {backend}
                     /> } />
                 <Route path="/changepassword" element={ <ChangePassword
                     reload = {reload}
@@ -261,6 +299,7 @@ const App = ()=>{
                     setPhoneNumber = {setPhoneNumber}
                     setUserName = {setUserName}
                     setUserEmail = {setUserEmail}
+                    backend = {backend}
                     />} />
                 <Route path="/profile" element={<Profile
                     reload = {reload}
@@ -282,9 +321,11 @@ const App = ()=>{
                     setPhoneNumber = {setPhoneNumber}
                     setUserName = {setUserName}
                     setUserEmail = {setUserEmail}
+                    backend = {backend}
                     />} />
                 <Route path="/plandata" element={<PlanData
                     adminPhoneNumber = {adminPhoneNumber}
+                    backend = {backend}
                     
                     /> } />
                 <Route path="/match/:id" element={<Match 
@@ -314,6 +355,8 @@ const App = ()=>{
                     rightImage = {rightImage}
                     setMatchId = {setMatchId}
                     userRole = {userRole}
+                    expertMatchList = {expertMatchList}
+                    backend = {backend}
                     
                     />} />
                 
@@ -333,17 +376,20 @@ const App = ()=>{
                     setRight = {setRight}
                     setLeft = {setLeft}
                     setRole = {setRole}
+                    backend = {backend}
                     />} />
                 <Route path="/accountsdata" element={<AccountsData 
                     reload = {reload}
                     login={login}
                     userRole = {userRole}
                     phoneNumber = {phoneNumber}
+                    backend = {backend}
                     />} />
                 <Route path="/adminaccountsdata" element={<AdminAccountsData
                     reload = {reload}
                     login={login}
                     userRole = {userRole}
+                    backend = {backend}
                     />} />
                 <Route path="/change" element={<ChangeData 
                     reload = {reload}
@@ -353,10 +399,12 @@ const App = ()=>{
                     setPlayerList = {setPlayerList}
                     leftName = {leftName}
                     rightName = {rightName}
+                    backend = {backend}
                     />} />
                 <Route path="/previousmatch/:id" element={<PreviousMatchDetail 
                     reload = {reload}
                     sportIndex ={sportIndex}
+                    backend = {backend}
                     />} />
 
                 
@@ -367,6 +415,7 @@ const App = ()=>{
                     setCaptainPlayers = {setCaptainPlayers}
                     setVicecaptainPlayers= {setVicecaptainPlayers}
                     setFixedPlayers = {setFixedPlayers}
+                    backend = {backend}
                 />} />
                 <Route path="/fixed" element={<FixedPlayer
                     reload = {reload}
@@ -375,6 +424,7 @@ const App = ()=>{
                     setSelectedPlayers = {setSelectedPlayers}
                     fixedPlayers = {fixedPlayers}
                     setFixedPlayers = {setFixedPlayers}
+                    backend = {backend}
                     />} />
                  <Route path="/captain" element={<CaptainPlayer
                     reload = {reload}
@@ -383,6 +433,7 @@ const App = ()=>{
                     setSelectedPlayers = {setSelectedPlayers}
                     captainPlayers = {captainPlayers}
                     setCaptainPlayers = {setCaptainPlayers}
+                    backend = {backend}
                     />} />
                  <Route path="/vicecaptain" element={<VicecaptainPlayer
                     reload = {reload}
@@ -391,6 +442,7 @@ const App = ()=>{
                     setSelectedPlayers = {setSelectedPlayers}
                     vicecaptainPlayers = {vicecaptainPlayers}
                     setVicecaptainPlayers = {setVicecaptainPlayers}
+                    backend = {backend}
                     />} />
                 <Route path="/partision" element ={ <Partision
                     reload = {reload}
@@ -402,6 +454,7 @@ const App = ()=>{
                     leftImage = {leftImage}
                     rightName = {rightName}
                     rightImage = {rightImage}
+                    backend = {backend}
                     /> } /> 
                 <Route path="/selection" element ={ <Selection
                     reload = {reload}
@@ -410,6 +463,7 @@ const App = ()=>{
                     setSelectionFlag = {setSelectionFlag}
                     sportIndex = {sportIndex}
                     setSelectionStrategy = {setSelectionStrategy}
+                    backend = {backend}
                     /> } /> 
                 <Route path="/credit" element ={ <CreditRange
                     reload = {reload}
@@ -417,6 +471,7 @@ const App = ()=>{
                     rightRange = {rightRange}
                     setLeftRange = {setLeftRange}
                     setRightRange = {setRightRange}
+                    backend = {backend}
                     /> } /> 
                 <Route path="/combination" element={<TeamCombination 
                     reload = {reload}
@@ -424,11 +479,13 @@ const App = ()=>{
                     selectedPlayers = {selectedPlayers}
                     fixedPlayers = {fixedPlayers}
                     setCombination = {setCombination}
+                    backend = {backend}
                     />} /> 
                 
                 <Route path="/addpoint/:id" element={<AddPoint
                     reload = {reload}
                     sportIndex = {sportIndex}
+                    backend = {backend}
                     />} />
 
                 <Route path="/advanced" element={<AdvancedGeneration
@@ -452,6 +509,7 @@ const App = ()=>{
                     leftImage = {leftImage}
                     rightName = {rightName}
                     rightImage = {rightImage}
+                    backend = {backend}
                     /> } />
                 <Route path="/grand" element={<GrandLeague
                     reload = {reload}
@@ -466,6 +524,7 @@ const App = ()=>{
                     leftImage = {leftImage}
                     rightName = {rightName}
                     rightImage = {rightImage}
+                    backend = {backend}
                     />} />
                 <Route path="/smart" element={<SmartGeneration
                     reload = {reload}
@@ -480,6 +539,7 @@ const App = ()=>{
                     leftImage = {leftImage}
                     rightName = {rightName}
                     rightImage = {rightImage}
+                    backend = {backend}
                         />} />
                 <Route path="/auto" element={<AutoGeneration
                     reload = {reload}
@@ -494,6 +554,7 @@ const App = ()=>{
                     leftImage = {leftImage}
                     rightName = {rightName}
                     rightImage = {rightImage}
+                    backend = {backend}
                         />} />
 
                 {/* Expert Related Stuff will come here */}
@@ -509,11 +570,13 @@ const App = ()=>{
                     playerList = {playerList}
                     setPlayerList = {setPlayerList}
                     setMatchId = {setMatchId}
+                    backend = {backend}
                     />} />
                 <Route path="/superdecision/:id" element={<SuperDecision 
                     reload = {reload}
                     login = {login}
                     plan = {plan}
+                    backend = {backend}
                     />} />
                 <Route path="/expertpanel/:match" element={<ExpertPanel 
                     reload = {reload}
@@ -524,6 +587,7 @@ const App = ()=>{
                     setFetchedExpertCards = {setFetchedExpertCards}
                     expertUserList = {expertUserList}
                     setExpertUserList = {setExpertUserList}
+                    backend = {backend}
                     />} />
 
                 <Route path="/sharesoftware/:match/:attempt" element={ <ShareSoftware
@@ -531,6 +595,7 @@ const App = ()=>{
                     reload = {reload}
                     softwareTeams = {softwareTeams}
                     setSoftwareTeams = {setSoftwareTeams}
+                    backend = {backend}
                     /> } />
                 <Route path="/sharehuman/:match" element={ <ShareHuman 
                     sportIndex = {sportIndex}
@@ -538,6 +603,7 @@ const App = ()=>{
                     playerList = {playerList}
                     humanTeams  = {humanTeams}
                     setHumanTeams = {setHumanTeams}
+                    backend = {backend}
 
                     /> } />
                 <Route path="/storeexpertteams/:match/:type" element={<StoreExpertTeams 
@@ -548,6 +614,7 @@ const App = ()=>{
                     setSoftwareTeams = {setSoftwareTeams}
                     setHumanTeams = {setHumanTeams}
                     phoneNumber = {phoneNumber}
+                    backend = {backend}
                   
                     />} />
 
@@ -556,14 +623,17 @@ const App = ()=>{
                     reload = {reload}
                      userRole = {userRole}
                      phoneNumber = {phoneNumber}
+                     backend = {backend}
                     />} />
                 <Route path="/manageuser" element={<ManageUser
                     reload = {reload}
                     userRole = {userRole}
+                    backend = {backend}
                     />} /> 
                 <Route path="/notify" element={<Notify
                     reload = {reload}
                     userRole = {userRole}
+                    backend = {backend}
                     />} /> 
                 
                 <Route path="/AvinashSaini" element={<CollabComponenet
@@ -581,6 +651,7 @@ const App = ()=>{
                 <Route path="/aboutus" element={<AboutUs /> } />
                 <Route path="/contactus" element={<ContactUs
                     adminPhoneNumber = {adminPhoneNumber}
+                    backend = {backend}
                     /> } />
                 <Route path="/howtogenerate" element={<HowToGenerate /> } />
                 <Route path="/refundpolicy" element={<RefundPolicy /> } />
@@ -594,19 +665,23 @@ const App = ()=>{
                         sportIndex = {sportIndex}
                         userRole = {userRole}
                         reload = {reload}
+                        backend = {backend}
                         /> } />
                     <Route  path="/result/:match/:attempt" element={<ResultNormal 
                         sportIndex = {sportIndex}
                         reload = {reload}
+                        backend = {backend}
                         /> } />
                     <Route  path="/displayauto/:match/:attempt" element={<DisplayAuto 
                         sportIndex = {sportIndex}
                         reload = {reload}
                         setSelectedPlayers = {setSelectedPlayers}
+                        backend = {backend}
                         /> } />
                     <Route  path="/resultauto/:match/:attempt" element={<ResultAuto
                         sportIndex = {sportIndex}
                         reload = {reload}
+                        backend = {backend}
                         /> } />
                     <Route path='/shortcutprintnormal/:match/:attempt' element = {<ShortcutPrintNormal  
                         />} />
@@ -625,6 +700,7 @@ const App = ()=>{
                         rightName = {rightName}
                         seriesName = {seriesName}
                         playerList = {playerList}
+                        backend = {backend}
                         />} />
                     
                 </Routes>
