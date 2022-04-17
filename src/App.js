@@ -184,6 +184,8 @@ const App = ()=>{
         if(team_data!==null)
         {
             team_data= team_data.filter(team_obj =>{
+                if(team_obj.data === undefined)
+                    return false;
                 let match_time = new Date(team_obj.data.match_time).getTime();
                 let now = new Date().getTime()
                 if(match_time>now)
