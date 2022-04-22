@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios'
-import temp_match_data from '../../api/match_data';
 
 
 const Decision = (props)=>{
@@ -36,39 +35,7 @@ const Decision = (props)=>{
         {
             navigate('/plandata')
         }
-        let jp=false
-        let jp_data = null 
-        for(let i=0;i<temp_match_data.length;i++)
-        {
-            if(temp_match_data[i].id.toString() === id.toString())
-            {
-                jp = true 
-                jp_data = temp_match_data[i].data 
-            }
-                
-        }
-        if(jp)
-        {
-            let m_data = jp_data
-            let player_list = get_player_list()
-            props.setLeftName(m_data.left_team_name)
-            props.setRightName(m_data.right_team_name)
-            props.setLeftImage(m_data.left_team_image)
-            props.setRightImage(m_data.right_team_image)
-            props.setMatchId(id)  
-            m_data.left_team_players.forEach((player)=>{
-                player.selected = 0
-                player_list[player.role].push(player)
-            })
-            m_data.right_team_players.forEach((player)=>{
-                player.selected = 0
-                player_list[player.role].push(player)
-            })
-            // setPlayerList 
-            props.setPlayerList(player_list)
-        }
-        else 
-        {
+       
             axios.get(`${props.backend}/api/fantasy/match/${id}`)
             .then((response)=>{
                 let m_data = response.data.data 
@@ -89,7 +56,7 @@ const Decision = (props)=>{
                 // setPlayerList 
                 props.setPlayerList(player_list)
             })
-        }
+        
       
     },[])
 
