@@ -55,6 +55,9 @@ import ShareHuman from './components/Expert/ShareHuman';
 import StoreExpertTeams from './components/Expert/StoreExpertTeams'
 import ShowExpertTeams from './components/Expert/ShowExpertTeams';
 import SuperDecision from './components/Expert/SuperDecision'
+import PostPrime from './prime/PostPrime';
+import DisplayPrimeTeam from './prime/DisplayPrimeTeam';
+import BookTeams from './prime/BookTeams';
 
 // our color : #563d7c
 
@@ -66,11 +69,12 @@ const App = ()=>{
         return Math.floor((Math.random() * num))
     }
     const backendList = [
+    //    'http://localhost:5000'
         'https://tg-node-eight.herokuapp.com',
         'https://tg-node-nine.herokuapp.com',
         'https://tg-node-ten.herokuapp.com',
         'https://tg-node-eleven.herokuapp.com',
-        'https://tg-node-twelve.herokuapp.com'
+        'https://tg-node-twelve.herokuapp.com',
     ]
     const [reload, setReload] = useState(null)
     const [sportIndex,setSportIndex] = useState(0) // change 
@@ -106,6 +110,12 @@ const App = ()=>{
     let [plan,setPlan] = useState(false)
     let [currentPlan,setCurrentPlan] = useState(null)
     let [previousPlan,setPreviousPlan] = useState(null)
+    {/* prime plan stuff start*/}
+    let [primeUser,setPrimeUser] = useState(false)
+    let [primePlan,setPrimePlan] = useState(false)
+    let [currentPrimePlan,setCurrentPrimePlan] = useState(null)
+    let [previousPrimePlan,setPreviousPrimePlan] = useState(null)
+    {/* prime plan stuff end*/}
     let [userName,setUserName] = useState('')
     let [userEmail,setUserEmail] = useState('')
     let [userRole,setUserRole] = useState('')
@@ -115,7 +125,7 @@ const App = ()=>{
     let [adminPhoneNumber,setAdminPhoneNumber] = useState('9502285143')
 
     {/* backend api handling  */}
-    let [backend,setBackend] = useState('https://team-generation-api.herokuapp.com')
+    let [backend,setBackend] = useState(backendList[getRandNumber(backendList.length)])
 
     {/* expert stuff here */}
     let [softwareTeams,setSoftwareTeams] = useState([])
@@ -123,21 +133,31 @@ const App = ()=>{
     let [expertMatchList,setExpertMatchList] = useState([])
     let [fetchedExpertCards,setFetchedExpertCards] = useState([])
     let [expertUserList,setExpertUserList] = useState([]) 
-    
+    {/* here stuff related to prime teams*/}
+    let [primeAdmin,setPrimeAdmin] = useState(false)
+    let [primeTeamData,setPrimeTeamData] = useState([]) 
+    let [primeMatchList,setPrimeMatchList] = useState([])
+    let [primeFetchedData,setPrimeFetchedData] = useState(null)
+    {/* prime team booking data */}
+    let [bookingOpenList,setBookingOpenList] = useState([])
+
+
     useEffect(()=>{
 
         let backendStuff = localStorage.getItem('backend')
-        let backendIndex = getRandNumber(8) // array length
+        let backendIndex = getRandNumber(backendList.length) // array length
         if(backendStuff !== null && backendStuff !== undefined && backendStuff !== '')
         {
             if(backendIndex === parseInt(backendStuff))
-                backendIndex = (backendIndex+1)%8; // array length 
+                backendIndex = (backendIndex+1)%backendList.length; // array length 
             localStorage.setItem('backend',`${backendIndex}`); 
         }
         else 
         {
             localStorage.setItem('backend',`${backendIndex}`); 
         } 
+        // console.log(backendIndex)
+        // console.log(backendList)
         setBackend(backendList[backendIndex])
 
 
@@ -150,6 +170,7 @@ const App = ()=>{
                 let data = response.data.data 
                 if(response.status===200)
                 {
+                   // console.log(data)
                     if(data.login=== true)
                     {
                         setLogin(data.login)
@@ -160,10 +181,24 @@ const App = ()=>{
                         setCurrentPlan(data.current_plan)
                         setPreviousPlan(data.previous_plans)
                         setPhoneNumber(data.phoneNumber)
+                        setPrimePlan(true) // data.prime_plan
+                        setPrimeUser(true) // data.prime_user
+                        setCurrentPrimePlan(data.current_prime_plan)
+                        setPreviousPrimePlan(data.previous_prime_plans)
+                    }
+                  //  console.log(data.phoneNumber.toString())
+                    if(data.phoneNumber.toString() === '9848579715' || data.phoneNumber.toString() === '9642640768' || data.phoneNumber.toString() === '9001517196')
+                    {
+                        //console.log('hi')
+                        setPrimeAdmin(true)
                     }
                 }
             })
         }
+
+
+
+
         let stuff = localStorage.getItem('tg_stuff')
         if(stuff === null || stuff === undefined)
             localStorage.setItem('tg_stuff','kvp')
@@ -178,6 +213,7 @@ const App = ()=>{
             localStorage.setItem('team_data',JSON.stringify([]))
         //probably if any removal of any out dated match data should be displayed here. 
        team_data = JSON.parse(team_data)
+
         if(team_data!==null)
         {
             team_data= team_data.filter(team_obj =>{
@@ -235,6 +271,8 @@ const App = ()=>{
 
     },[])
 
+    
+
     return (
     <React.Fragment>
             <ToastContainer  />
@@ -247,6 +285,12 @@ const App = ()=>{
                     userRole = {userRole}
                     expertMatchList = {expertMatchList}
                     setExpertMatchList={setExpertMatchList}
+                    primeMatchList = {primeMatchList}
+                    bookingOpenList = {bookingOpenList}
+                    setBookingOpenList = {setBookingOpenList}
+                    setPrimeMatchList = {setPrimeMatchList}
+                    primeUser = {primeUser} 
+                    primePlan = {primePlan}
                     setSeriesName = {setSeriesName}
                     setMatchTime = {setMatchTime}
                     sportIndex = {sportIndex}
@@ -262,6 +306,7 @@ const App = ()=>{
                     setLeft = {setLeft}
                     setRole = {setRole}
                     backend = {backend}
+                    primeAdmin = {primeAdmin}
                     />} />
                 <Route path="/mymatches" element = {<PreviousMatch
                     reload = {reload}
@@ -273,6 +318,7 @@ const App = ()=>{
                     bottomIndex = {bottomIndex}
                     setBottomIndex = {setBottomIndex}
                     backend = {backend}
+                    primeAdmin = {primeAdmin}
                     />} />
                 <Route path="/login" element={<Login
                     reload = {reload}
@@ -286,6 +332,7 @@ const App = ()=>{
                     setCurrentPlan ={setCurrentPlan}
                     setPreviousPlan = {setPreviousPlan}
                     backend = {backend}
+                    primeAdmin = {primeAdmin}
                     /> } />
                 <Route path="/changepassword" element={ <ChangePassword
                     reload = {reload}
@@ -299,6 +346,7 @@ const App = ()=>{
                     setUserName = {setUserName}
                     setUserEmail = {setUserEmail}
                     backend = {backend}
+                    primeAdmin = {primeAdmin}
                     />} />
                 <Route path="/profile" element={<Profile
                     reload = {reload}
@@ -307,6 +355,10 @@ const App = ()=>{
                     plan = {plan}
                     currentPlan = {currentPlan}
                     previousPlan = {previousPlan}
+                    currentPrimePlan = {currentPrimePlan}
+                    previousPrimePlan={previousPrimePlan}
+                    primeUser={primeUser}
+                    primePlan={primePlan}
                     userName = {userName}
                     phoneNumber = {phoneNumber}
                     userEmail = {userEmail}
@@ -316,6 +368,7 @@ const App = ()=>{
                     setPlan = {setPlan}
                     setCurrentPlan ={setCurrentPlan}
                     setPreviousPlan = {setPreviousPlan}
+                    
                     setUserRole = {setUserRole}
                     setPhoneNumber = {setPhoneNumber}
                     setUserName = {setUserName}
@@ -331,11 +384,15 @@ const App = ()=>{
                     reload = {reload}
                     login = {login}
                     plan = {plan}
+                    primeUser = {primeUser}
+                    primePlan = {primePlan}
                     matchTime = {matchTime}
                     sportIndex = {sportIndex}
                     setSportIndex = {setSportIndex}
                     selectedPlayers = {selectedPlayers}
                     setSelectedPlayers = {setSelectedPlayers}
+                    bookingOpenList = {bookingOpenList}
+                    setBookingOpenList = {setBookingOpenList}
                     playerList = {playerList}
                     setPlayerList = {setPlayerList}
                     right = {right}
@@ -356,6 +413,8 @@ const App = ()=>{
                     userRole = {userRole}
                     expertMatchList = {expertMatchList}
                     backend = {backend}
+                    primeAdmin = {primeAdmin}
+                    phoneNumber = {phoneNumber}
                     
                     />} />
                 
@@ -383,12 +442,14 @@ const App = ()=>{
                     userRole = {userRole}
                     phoneNumber = {phoneNumber}
                     backend = {backend}
+                    primeAdmin = {primeAdmin}
                     />} />
                 <Route path="/adminaccountsdata" element={<AdminAccountsData
                     reload = {reload}
                     login={login}
                     userRole = {userRole}
                     backend = {backend}
+                    primeAdmin = {primeAdmin}
                     />} />
                 <Route path="/change" element={<ChangeData 
                     reload = {reload}
@@ -404,10 +465,24 @@ const App = ()=>{
                     reload = {reload}
                     sportIndex ={sportIndex}
                     backend = {backend}
+                    primeAdmin = {primeAdmin}
+                    primeTeamData = {primeTeamData}
+                    setPrimeTeamData = {setPrimeTeamData} 
+                    setMatchId = {setMatchId}
+            
                     />} />
-
+                <Route path="/postprime/:id" element={<PostPrime 
+                    sportIndex = {sportIndex}
+                    reload = {reload}
+                    matchId = {matchId}
+                    primeTeamData = {primeTeamData}
+                    setPrimeTeamData = {setPrimeTeamData}
+                    phoneNumber = {phoneNumber}
+                    backend = {backend}
+                    primeAdmin = {primeAdmin}
+                    />} />
                 
-                <Route path="/section" element={<Section 
+                <Route path="/section" element={<Section  
                     reload = {reload}
                     sportIndex = {sportIndex}
                     selectedPlayers={selectedPlayers}
@@ -510,6 +585,13 @@ const App = ()=>{
                     rightImage = {rightImage}
                     backend = {backend}
                     /> } />
+                <Route path="/bookteams/:id" element={<BookTeams
+                    reload = {reload}
+                    sportIndex = {sportIndex}
+                    backend = {backend}
+                    phoneNumber = {phoneNumber}
+                    matchId = {matchId}
+                    /> } />
                 <Route path="/grand" element={<GrandLeague
                     reload = {reload}
                     selectionFlag = {selectionFlag}
@@ -564,12 +646,18 @@ const App = ()=>{
                     setLeftImage = {setLeftImage}
                     setRightImage = {setRightImage}
                     setLeftName = {setLeftName}
+                    primeMatchList = {primeMatchList} // new 
+                    phoneNumber={phoneNumber} // new 
+                    primeUser = {primeUser}  // new 
+                    primePlan = {primePlan} // new 
+                    setPrimeFetchedData = {setPrimeFetchedData}
                     setRightName = {setRightName}
                     sportIndex = {sportIndex}
                     playerList = {playerList}
                     setPlayerList = {setPlayerList}
                     setMatchId = {setMatchId}
                     backend = {backend}
+                    primeAdmin = {primeAdmin}
                     />} />
                 <Route path="/superdecision/:id" element={<SuperDecision 
                     reload = {reload}
@@ -587,6 +675,7 @@ const App = ()=>{
                     expertUserList = {expertUserList}
                     setExpertUserList = {setExpertUserList}
                     backend = {backend}
+                    primeAdmin = {primeAdmin}
                     />} />
 
                 <Route path="/sharesoftware/:match/:attempt" element={ <ShareSoftware
@@ -614,6 +703,7 @@ const App = ()=>{
                     setHumanTeams = {setHumanTeams}
                     phoneNumber = {phoneNumber}
                     backend = {backend}
+                    primeAdmin = {primeAdmin}
                   
                     />} />
 
@@ -628,6 +718,7 @@ const App = ()=>{
                     reload = {reload}
                     userRole = {userRole}
                     backend = {backend}
+                    primeAdmin = {primeAdmin}
                     />} /> 
                 <Route path="/notify" element={<Notify
                     reload = {reload}
@@ -665,27 +756,41 @@ const App = ()=>{
                         userRole = {userRole}
                         reload = {reload}
                         backend = {backend}
+                        primeAdmin = {primeAdmin}
                         /> } />
                     <Route  path="/result/:match/:attempt" element={<ResultNormal 
                         sportIndex = {sportIndex}
                         reload = {reload}
                         backend = {backend}
+                        primeAdmin = {primeAdmin}
                         /> } />
                     <Route  path="/displayauto/:match/:attempt" element={<DisplayAuto 
                         sportIndex = {sportIndex}
                         reload = {reload}
                         setSelectedPlayers = {setSelectedPlayers}
                         backend = {backend}
+                        primeAdmin = {primeAdmin}
                         /> } />
                     <Route  path="/resultauto/:match/:attempt" element={<ResultAuto
                         sportIndex = {sportIndex}
                         reload = {reload}
                         backend = {backend}
+                        primeAdmin = {primeAdmin}
                         /> } />
                     <Route path='/shortcutprintnormal/:match/:attempt' element = {<ShortcutPrintNormal  
                         />} />
                     <Route path='/shortcutprintauto/:match/:attempt' element = {<ShortcutPrintAuto  
                         />} />
+                    
+                    <Route path="/primedisplay" element={<DisplayPrimeTeam
+                            primeFetchedData = {primeFetchedData}
+                            sportIndex = {sportIndex}
+                            reload = {reload}
+                            backend = {backend}
+                            primeAdmin = {primeAdmin}
+                            playerList={playerList}
+                        /> } /> 
+
                     <Route path='/showexpertteams/:id' element={<ShowExpertTeams
                         sportIndex = {sportIndex}
                         reload = {reload}
