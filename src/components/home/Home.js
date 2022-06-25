@@ -7,13 +7,12 @@ import { MdOutlineHistory} from 'react-icons/md'
 import { useNavigate } from 'react-router-dom';
 
 import axios from 'axios'
+
 const Home = (props)=>{
     let [loader,setLoader] = useState(false)
     let navigate = useNavigate()
     const [dataList,setDataList] = useState([])
     useEffect(()=>{
-        
-
         props.setBottomIndex(0)
         if(props.sportIndex===2)
         {
@@ -53,7 +52,7 @@ const Home = (props)=>{
 
     useEffect(()=>{
         let stuff = localStorage.getItem('tg_stuff')
-        if( stuff != null && stuff !== 'kvp' && stuff.toString().length=== 10)
+        if( stuff != null && stuff !== 'kvp' && stuff.toString().length === 10)
         {
             props.setAdminPhoneNumber(stuff)
         }
@@ -65,10 +64,7 @@ const Home = (props)=>{
 
            axios.get(`${props.backend}/api/fantasy/matches`)
             .then((response)=>{
-               
-              
-                    setDataList(response.data.data)
-                
+                setDataList(response.data.data)
                 setLoader(true)
                 console.log(response.data.data)
             })
@@ -80,9 +76,37 @@ const Home = (props)=>{
                 props.setExpertMatchList(response.data.data)
             })
 
+           
+
+
 
             props.setReload('done')
     },[])
+    useEffect(()=>{
+        if(props.primePlan === true)
+        {
+            axios.get(`${props.backend}/api/primeteam/teamlist`)
+            .then((response)=>{
+                // some stuff here 
+                let new_list = []
+                let booking_list = response.data.booking_data 
+                let prime_list = response.data.data
+                for(let i=0;i<booking_list.length;i++)
+                {
+                    let flag = false
+                    for(let j=0;j<prime_list.length;j++)
+                    {
+                        if(booking_list[i] === prime_list[j])
+                            flag = true 
+                    }
+                    if(flag === false)
+                        new_list.push(booking_list[i]);
+                }
+                props.setPrimeMatchList(response.data.data)
+                props.setBookingOpenList(new_list)
+            })
+        }
+    },[props.primePlan])
 
     return (
         <React.Fragment>
@@ -109,7 +133,7 @@ const Home = (props)=>{
                         </div>
                     </div>
                 }
-                { dataList[0] &&  dataList[props.sportIndex].map((match)=> <MatchCard key={match.id} backend = {props.backend} expertMatchList ={props.expertMatchList} sportIndex={props.sportIndex} setSeriesName={props.setSeriesName} setMatchTime={props.setMatchTime} match = {match} /> ) }
+                { dataList[0] &&  dataList[props.sportIndex].map((match)=> <MatchCard key={match.id} backend = {props.backend} expertMatchList ={props.expertMatchList} primeMatchList={props.primeMatchList} bookingOpenList={props.bookingOpenList} primeUser={props.primeUser} primePlan={props.primePlan} sportIndex={props.sportIndex} setSeriesName={props.setSeriesName} setMatchTime={props.setMatchTime} match = {match} /> ) }
                 </div>  
                 </div>
                

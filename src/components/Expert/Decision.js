@@ -1,4 +1,4 @@
-import React,{useEffect} from 'react'
+import React,{useEffect,useState} from 'react'
 import NavBarTwo from '../navbar/NavBarTwo';
 import GenericFooter from '../footer/GenericFooter';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +10,9 @@ import axios from 'axios'
 const Decision = (props)=>{
     let {id} = useParams()
     let navigate = useNavigate()
+    let [primeLoader,setPrimeLoader] = useState(false)
+    let [primeTeams,setPrimeTeams] = useState(false)
+    let [backupLoader,setBackupLoader] = useState(false)
 
     let get_player_list = ()=>{
         if(props.sportIndex===2)
@@ -56,8 +59,21 @@ const Decision = (props)=>{
                 // setPlayerList 
                 props.setPlayerList(player_list)
             })
-        
-      
+
+            //calling second api 
+            axios.get(`${props.backend}/api/primeteam/getdata/${id}/${props.phoneNumber}`)
+            .then((response)=>{
+                if(response.status === 200)
+                {
+                    props.setPrimeFetchedData(response.data)
+                    setPrimeTeams(response.data.primeTeams)
+                    setPrimeLoader(true)
+                }
+                else 
+                {
+                    setBackupLoader(true)
+                }
+            }) 
     },[])
 
     return (
@@ -65,7 +81,34 @@ const Decision = (props)=>{
             <NavBarTwo navigate ={navigate} />
             <div className="mini-container">
             <h4 className="sub-heading mb-4">Choose Here</h4>
-            
+            {/*prime user stuff here only */}
+            {props.primeUser && props.primePlan &&  props.primeMatchList.indexOf(id.toString()) !== -1  ?
+                <React.Fragment>
+                { primeTeams === true ? 
+                        <div className='section-card'>
+                            <img className="section-image" src="/primeteam.jpg" alt="prime" />
+                            <button onClick={()=>{ navigate('/primedisplay')}} className='btn section-btn' style={{backgroundColor:'purple',color:'white'}}>Continue</button>
+                        </div>
+                    : 
+                    <React.Fragment>
+                    {backupLoader === true? 
+                        <div className='section-card'>
+                            You didn't book Prime Teams.
+                        </div>
+                        :
+                        <div className='section-card'>
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only"></span>
+                        </div>
+                    </div>
+                    }
+                    </React.Fragment>
+                }
+               
+                </React.Fragment>
+                :
+                null
+            }
                 <div className='section-card'>
                     <div className="card-start-part" style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                     <br/>

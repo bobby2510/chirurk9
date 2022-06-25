@@ -55,6 +55,9 @@ import ShareHuman from './components/Expert/ShareHuman';
 import StoreExpertTeams from './components/Expert/StoreExpertTeams'
 import ShowExpertTeams from './components/Expert/ShowExpertTeams';
 import SuperDecision from './components/Expert/SuperDecision'
+import PostPrime from './prime/PostPrime';
+import DisplayPrimeTeam from './prime/DisplayPrimeTeam';
+import BookTeams from './prime/BookTeams';
 
 // our color : #563d7c
 
@@ -67,18 +70,26 @@ const App = ()=>{
     }
     const backendList = [
     //    'http://localhost:5000'
-        'https://tg-node-eight.herokuapp.com',
-        'https://tg-node-nine.herokuapp.com',
-        'https://tg-node-ten.herokuapp.com',
-        'https://tg-node-eleven.herokuapp.com',
-        'https://tg-node-twelve.herokuapp.com',
-        'https://tg-node-extra-one.herokuapp.com',
-        'https://tg-node-extra-two.herokuapp.com',
-        'https://tg-node-extra-three.herokuapp.com',
-        'https://tg-node-extra-four.herokuapp.com',
-        'https://tg-node-extra-five.herokuapp.com',
-        'https://tg-node-extra-six.herokuapp.com',
-        'https://tg-node-extra-seven.herokuapp.com'
+    'https://team-generation-api.herokuapp.com',
+    'https://tg-node-one.herokuapp.com',
+     'https://tg-node-two.herokuapp.com',
+     'https://tg-node-three.herokuapp.com',
+     'https://tg-node-four.herokuapp.com',
+     'https://tg-node-five.herokuapp.com',
+    'https://tg-node-six.herokuapp.com',
+    'https://tg-node-seven.herokuapp.com',
+    // 'https://tg-node-eight.herokuapp.com',
+    // 'https://tg-node-nine.herokuapp.com',
+    // 'https://tg-node-ten.herokuapp.com',
+    // 'https://tg-node-eleven.herokuapp.com',
+    // 'https://tg-node-twelve.herokuapp.com',
+    // 'https://tg-node-extra-one.herokuapp.com',
+    // 'https://tg-node-extra-two.herokuapp.com',
+    // 'https://tg-node-extra-three.herokuapp.com',
+    // 'https://tg-node-extra-four.herokuapp.com',
+    // 'https://tg-node-extra-five.herokuapp.com',
+    // 'https://tg-node-extra-six.herokuapp.com',
+    // 'https://tg-node-extra-seven.herokuapp.com'
     ]
     const [reload, setReload] = useState(null)
     const [sportIndex,setSportIndex] = useState(0) // change 
@@ -185,13 +196,13 @@ const App = ()=>{
                         setCurrentPlan(data.current_plan)
                         setPreviousPlan(data.previous_plans)
                         setPhoneNumber(data.phoneNumber)
-                        setPrimePlan(true) // data.prime_plan
-                        setPrimeUser(true) // data.prime_user
+                        setPrimePlan(data.prime_plan) // data.prime_plan
+                        setPrimeUser(data.prime_user) // data.prime_user
                         setCurrentPrimePlan(data.current_prime_plan)
                         setPreviousPrimePlan(data.previous_prime_plans)
                     }
                   //  console.log(data.phoneNumber.toString())
-                    if(data.phoneNumber.toString() === '9848579715' || data.phoneNumber.toString() === '9642640768' || data.phoneNumber.toString() === '9001517196')
+                    if(data.phoneNumber.toString() === '9848579715' || data.phoneNumber.toString() === '9642640768' || data.phoneNumber.toString() === '9001517196' )
                     {
                         //console.log('hi')
                         setPrimeAdmin(true)
@@ -475,7 +486,16 @@ const App = ()=>{
                     setMatchId = {setMatchId}
             
                     />} />
-               
+                <Route path="/postprime/:id" element={<PostPrime 
+                    sportIndex = {sportIndex}
+                    reload = {reload}
+                    matchId = {matchId}
+                    primeTeamData = {primeTeamData}
+                    setPrimeTeamData = {setPrimeTeamData}
+                    phoneNumber = {phoneNumber}
+                    backend = {backend}
+                    primeAdmin = {primeAdmin}
+                    />} />
                 
                 <Route path="/section" element={<Section  
                     reload = {reload}
@@ -579,6 +599,13 @@ const App = ()=>{
                     rightName = {rightName}
                     rightImage = {rightImage}
                     backend = {backend}
+                    /> } />
+                <Route path="/bookteams/:id" element={<BookTeams
+                    reload = {reload}
+                    sportIndex = {sportIndex}
+                    backend = {backend}
+                    phoneNumber = {phoneNumber}
+                    matchId = {matchId}
                     /> } />
                 <Route path="/grand" element={<GrandLeague
                     reload = {reload}
@@ -739,7 +766,7 @@ const App = ()=>{
              </div> 
              <div  style={{padding:0}}>
                 <Routes>
-                    <Route  path="/display/:match/:attempt" element={<DisplayNormal 
+                    <Route  path="/display/:match/:attempt/:ftype/:fvalue" element={<DisplayNormal 
                         sportIndex = {sportIndex}
                         userRole = {userRole}
                         reload = {reload}
@@ -770,6 +797,14 @@ const App = ()=>{
                     <Route path='/shortcutprintauto/:match/:attempt' element = {<ShortcutPrintAuto  
                         />} />
                     
+                    <Route path="/primedisplay" element={<DisplayPrimeTeam
+                            primeFetchedData = {primeFetchedData}
+                            sportIndex = {sportIndex}
+                            reload = {reload}
+                            backend = {backend}
+                            primeAdmin = {primeAdmin}
+                            playerList={playerList}
+                        /> } /> 
 
                     <Route path='/showexpertteams/:id' element={<ShowExpertTeams
                         sportIndex = {sportIndex}
